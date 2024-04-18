@@ -1,4 +1,7 @@
 {
+  "projects": {
+    "default": "gestion-productos-97814"
+  },
   "targets": {
     "gestion-productos-97814": {
       "hosting": {
@@ -7,8 +10,5 @@
         ]
       }
     }
-  },
-  "projects": {
-    "default": "gestion-productos-97814"
   }
 }
