@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "gestion-productos-97814": {
+      "hosting": {
+        "gestion-alimentos": [
+          "gestion-productos-97814"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "gestion-productos-97814"
+  }
+}

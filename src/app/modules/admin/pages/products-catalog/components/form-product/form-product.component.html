@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>{{ !data ? "Nuevo" : "Editar" }} producto</h2>
+
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="formProduct" (ngSubmit)="createProduct()">
+    <div class="column">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Precio</mat-label>
+        <input matInput formControlName="price" digitOnly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Cantidad</mat-label>
+        <input matInput formControlName="amount" digitOnly />
+      </mat-form-field>
+
+      <div class="row">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="formProduct.invalid"
+        >
+          {{ !data ? "Crear" : "Editar" }}
+        </button>
+        <button
+          mat-stroked-button
+          color="primary"
+          mat-dialog-close
+          type="button"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
