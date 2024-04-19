@@ -1,0 +1,55 @@
+<div class="container-login animated fadeIn">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title class="text-center">
+        Admin Gestión De Alimentos
+      </mat-card-title>
+
+      <mat-card-subtitle>
+        Ingrese al portal de gestión de alimentos con sus credenciales asignadas
+      </mat-card-subtitle>
+    </mat-card-header>
+    <br />
+
+    <mat-card-content>
+      <form [formGroup]="loginForm">
+        <mat-form-field appearance="fill">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="text" />
+        </mat-form-field>
+
+        <mat-form-field class="animated fadeIn" appearance="fill">
+          <mat-label>Contraseña</mat-label>
+
+          <input
+            matInput
+            formControlName="password"
+            [type]="hide ? 'password' : 'text'"
+          />
+
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="hide = !hide"
+            type="button"
+          >
+            <mat-icon color="primary">
+              {{ hide ? "visibility_off" : "visibility" }}
+            </mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button
+          class="animated fadeIn"
+          mat-raised-button
+          color="primary"
+          type="button"
+          [disabled]="loginForm.invalid"
+          (click)="login()"
+        >
+          Login
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

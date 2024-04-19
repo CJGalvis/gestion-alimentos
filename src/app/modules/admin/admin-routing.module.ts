@@ -3,12 +3,29 @@ import { RouterModule, Routes } from '@angular/router';
 import { NavComponent } from './components/nav/nav.component';
 import { ProductsCatalogComponent } from './pages/products-catalog/products-catalog.component';
 import { OrdersManagementComponent } from './pages/orders-management/orders-management.component';
-import { UsersComponent } from './pages/users/users.component';
+import { LoginComponent } from './pages/login/login.component';
+import {
+  AuthGuard,
+  redirectLoggedInTo,
+  redirectUnauthorizedTo,
+} from '@angular/fire/auth-guard';
+
+const redirectUnauthorizedToLogin = () =>
+  redirectUnauthorizedTo(['admin/login']);
+const redirectLoggedInToHome = () => redirectLoggedInTo(['admin/dashboard']);
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [AuthGuard],
+    data: { authGuardPipe: redirectLoggedInToHome },
+  },
+  {
+    path: 'dashboard',
     component: NavComponent,
+    canActivate: [AuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
     children: [
       {
         path: '',
@@ -22,10 +39,6 @@ const routes: Routes = [
       {
         path: 'orders-management',
         component: OrdersManagementComponent,
-      },
-      {
-        path: 'users',
-        component: UsersComponent,
       },
     ],
   },

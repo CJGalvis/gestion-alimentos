@@ -1,0 +1,9 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.container-list {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}

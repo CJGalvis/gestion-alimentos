@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormProductComponent } from '../form-product/form-product.component';
 import { Product } from 'src/app/modules/shared/models/Product';
-import { MatTable } from '@angular/material/table';
 import Swal from 'sweetalert2';
 import { StateService } from 'src/app/modules/shared/services/state/state.service';
 import { ProductsService } from '../../services/products.service';
@@ -13,16 +12,14 @@ import { ProductsService } from '../../services/products.service';
   styleUrls: ['./list-products.component.css'],
 })
 export class ListProductsComponent implements OnInit {
-  displayedColumns: string[] = [
+  public displayedColumns: string[] = [
     'name',
     'description',
     'price',
     'amount',
     'actions',
   ];
-  dataSource: Array<Product> = [];
-  @ViewChild(MatTable)
-  table!: MatTable<Product>;
+  public dataSource: Array<Product> = [];
 
   constructor(
     public dialog: MatDialog,
