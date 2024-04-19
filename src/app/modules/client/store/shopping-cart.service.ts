@@ -1,26 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Product } from '../../shared/models/Product';
-import { BehaviorSubject } from 'rxjs';
 import { ShoppinCart } from '../../shared/models/ShoppinCart';
+import { Auth } from '@angular/fire/auth';
+import {
+  getDatabase,
+  onValue,
+  push,
+  ref,
+  remove,
+  set,
+} from '@angular/fire/database';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ShoppingCartService {
   private listProducts: Array<Product> = [];
+  public userState = new BehaviorSubject<string>('');
 
-  public shoppingCart = new BehaviorSubject<ShoppinCart>({
-    products: [],
-    TotalToPay: 0,
-  });
-
-  constructor() {}
+  constructor(private auth: Auth) {}
 
   getProducts() {
     return this.listProducts;
   }
 
-  addProduct(product: Product) {
+  async addProduct(product: Product) {
     const index = this.listProducts.findIndex(
       (value) => value.key == product.key
     );
@@ -30,6 +35,11 @@ export class ShoppingCartService {
     } else {
       this.listProducts[index].count! += 1;
     }
+
+    return this.saveShoppingCart({
+      products: this.listProducts,
+      totalToPay: this.totalToPay(),
+    });
   }
 
   removeProduct(product: Product) {
@@ -40,7 +50,11 @@ export class ShoppingCartService {
     if (index != -1) {
       this.listProducts.splice(index, 1);
     }
-    console.log(this.listProducts);
+
+    return this.saveShoppingCart({
+      products: this.listProducts,
+      totalToPay: this.totalToPay(),
+    });
   }
 
   productsLength(): number {
@@ -56,5 +70,45 @@ export class ShoppingCartService {
         accumulator + currentValue.count! * currentValue.price,
       0
     );
+  }
+
+  saveOrder() {
+    const db = getDatabase();
+    const dataRef = ref(db, `orders`);
+    return push(dataRef, {
+      products: this.listProducts,
+      totalToPay: this.totalToPay(),
+      client: this.auth.currentUser?.uid,
+    });
+  }
+
+  clearShoppingCart() {
+    this.listProducts = [];
+    const { uid } = this.auth.currentUser!;
+    const db = getDatabase();
+    const dataRef = ref(db, `shopping/${uid}`);
+    return remove(dataRef);
+  }
+
+  private saveShoppingCart(shopping: ShoppinCart) {
+    const { uid } = this.auth.currentUser!;
+    const db = getDatabase();
+    const refToSave = ref(db, `shopping/${uid}`);
+    return set(refToSave, shopping);
+  }
+
+  public getShopping() {
+    setTimeout(() => {
+      const uid = this.auth.currentUser?.uid;
+      this.userState.next(this.auth.currentUser?.email!);
+      const db = getDatabase();
+      const starCountRef = ref(db, `shopping/${uid}`);
+      onValue(starCountRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          this.listProducts = data.products;
+        }
+      });
+    }, 500);
   }
 }

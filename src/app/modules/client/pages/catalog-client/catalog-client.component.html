@@ -2,17 +2,29 @@
   <span>Gestion de alimentos</span>
   <span class="example-spacer"></span>
 
+  <span>{{ user$ | async }}</span>
+
+  <button mat-icon-button *ngIf="user$ | async">
+    <mat-icon> supervised_user_circle </mat-icon>
+  </button>
+
   <button
     mat-icon-button
     matTooltip="Carrito de compras"
     (click)="openShoppingCart()"
+    *ngIf="user$ | async"
   >
     <mat-icon [matBadge]="shoppingCart.productsLength()" matBadgeColor="accent">
       shopping_cart
     </mat-icon>
   </button>
 
-  <button mat-icon-button (click)="logout()" matTooltip="Salir">
+  <button
+    mat-icon-button
+    (click)="logout()"
+    matTooltip="Salir"
+    *ngIf="user$ | async"
+  >
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </mat-toolbar>

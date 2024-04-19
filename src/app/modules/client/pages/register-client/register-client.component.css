@@ -1,0 +1,30 @@
+.container-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+mat-form-field,
+button {
+  width: 100%;
+}
+
+button {
+  margin-bottom: 15px;
+}
+
+.logo-curn {
+  height: 100px;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.container-login {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5%;
+}
