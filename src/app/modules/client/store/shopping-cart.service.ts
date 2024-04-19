@@ -25,7 +25,7 @@ export class ShoppingCartService {
     return this.listProducts;
   }
 
-  async addProduct(product: Product) {
+  addProduct(product: Product) {
     const index = this.listProducts.findIndex(
       (value) => value.key == product.key
     );
@@ -33,7 +33,24 @@ export class ShoppingCartService {
     if (index == -1) {
       this.listProducts.push(product);
     } else {
-      this.listProducts[index].count! += 1;
+      if (this.listProducts[index].count! < this.listProducts[index].amount) {
+        this.listProducts[index].count! += 1;
+      }
+    }
+
+    return this.saveShoppingCart({
+      products: this.listProducts,
+      totalToPay: this.totalToPay(),
+    });
+  }
+
+  subtractProduct(product: Product) {
+    const index = this.listProducts.findIndex(
+      (value) => value.key == product.key
+    );
+
+    if (this.listProducts[index].count! > 1) {
+      this.listProducts[index].count! -= 1;
     }
 
     return this.saveShoppingCart({

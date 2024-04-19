@@ -3,7 +3,25 @@
 }
 
 .container-list {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, auto);
   gap: 15px;
+}
+
+@media all and (max-width: 600px) {
+  .container-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 15px;
+  }
+
+  .text-header {
+    font-size: 14px;
+  }
+
+  .text-header-title {
+    display: none;
+  }
 }

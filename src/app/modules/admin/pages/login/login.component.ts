@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth/auth.service';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -20,8 +21,17 @@ export class LoginComponent {
 
   login() {
     const { email, password } = this.loginForm.value;
-    this.authService.login(email, password).then((data: any) => {
-      this.router.navigate(['admin/dashboard']);
-    });
+    this.authService
+      .login(email, password)
+      .then((data: any) => {
+        this.router.navigate(['admin/dashboard']);
+      })
+      .catch(() => {
+        Swal.fire({
+          title: 'Algo falló',
+          text: 'Ocurrió un error con el inicio de sesión',
+          icon: 'error',
+        });
+      });
   }
 }

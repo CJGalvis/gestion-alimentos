@@ -6,6 +6,11 @@ import { CatalogClientComponent } from './pages/catalog-client/catalog-client.co
 
 const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'catalog',
+    pathMatch: 'full',
+  },
+  {
     path: 'login',
     component: LoginClientComponent,
   },

@@ -16,3 +16,8 @@ mat-dialog-content {
   justify-content: flex-end;
   padding: 0;
 }
+
+.row-buttons {
+  display: flex;
+  align-items: center;
+}

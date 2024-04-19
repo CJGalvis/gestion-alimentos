@@ -41,4 +41,18 @@ export class ShoppingCartComponent implements OnInit {
   saveOrder() {
     this.dialog.close(true);
   }
+
+  addProduct(item: Product) {
+    this.shoppingCart.addProduct(item).then(() => {
+      this.dataSource = this.shoppingCart.getProducts();
+      this.table.renderRows();
+    });
+  }
+
+  subtractProduct(item: Product) {
+    this.shoppingCart.subtractProduct(item).then(() => {
+      this.dataSource = this.shoppingCart.getProducts();
+      this.table.renderRows();
+    });
+  }
 }
