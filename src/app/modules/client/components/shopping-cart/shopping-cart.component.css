@@ -1,0 +1,18 @@
+table {
+  width: 100%;
+}
+
+mat-dialog-content {
+  overflow: scroll;
+}
+
+.row-total {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.mat-mdc-dialog-actions {
+  justify-content: flex-end;
+  padding: 0;
+}

@@ -2,8 +2,12 @@
   <span>Gestion de alimentos</span>
   <span class="example-spacer"></span>
 
-  <button mat-icon-button matTooltip="Carrito de compras">
-    <mat-icon [matBadge]="shoppingCartLength$" matBadgeColor="accent">
+  <button
+    mat-icon-button
+    matTooltip="Carrito de compras"
+    (click)="openShoppingCart()"
+  >
+    <mat-icon [matBadge]="shoppingCart.productsLength()" matBadgeColor="accent">
       shopping_cart
     </mat-icon>
   </button>
