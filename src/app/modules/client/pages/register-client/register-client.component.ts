@@ -21,14 +21,13 @@ export class RegisterClientComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  register() {
-    const { email, password } = this.registerForm.value;
-    this.authService.register(email, password).then(() => {
-      const value = this.registerForm.value;
-      delete value.password;
-      this.authService
-        .create(value)
-        .then(() => this.router.navigate(['client/catalog']));
-    });
+  async register() {
+    const value = this.registerForm.value;
+    value.password = btoa(value.password);
+    await this.authService.create(value);
+    delete value.password;
+    const token = btoa(JSON.stringify(value));
+    localStorage.setItem('token', token);
+    this.router.navigate(['client/catalog']);
   }
 }

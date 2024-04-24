@@ -1,16 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Product } from '../../shared/models/Product';
-import { ShoppinCart } from '../../shared/models/ShoppinCart';
 import { Auth } from '@angular/fire/auth';
-import {
-  getDatabase,
-  onValue,
-  push,
-  ref,
-  remove,
-  set,
-} from '@angular/fire/database';
+import { getDatabase, push, ref } from '@angular/fire/database';
 import { BehaviorSubject } from 'rxjs';
+import { AuthService } from '../../shared/services/auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,44 +12,36 @@ export class ShoppingCartService {
   private listProducts: Array<Product> = [];
   public userState = new BehaviorSubject<string>('');
 
-  constructor(private auth: Auth) {}
+  constructor(private auth: Auth, private authService: AuthService) {}
 
   getProducts() {
     return this.listProducts;
   }
 
-  addProduct(product: Product) {
+  async addProduct(product: Product) {
     const index = this.listProducts.findIndex(
       (value) => value.key == product.key
     );
 
     if (index == -1) {
+      product.count = 1;
       this.listProducts.push(product);
     } else {
-      if (this.listProducts[index].count! < this.listProducts[index].amount) {
-        this.listProducts[index].count! += 1;
-      }
+      this.listProducts[index]['count']! += 1;
     }
-
-    return this.saveShoppingCart({
-      products: this.listProducts,
-      totalToPay: this.totalToPay(),
-    });
+    product.stock--;
   }
 
-  subtractProduct(product: Product) {
+  async subtractProduct(product: Product) {
     const index = this.listProducts.findIndex(
       (value) => value.key == product.key
     );
 
     if (this.listProducts[index].count! > 1) {
-      this.listProducts[index].count! -= 1;
+      this.listProducts[index]['count']! -= 1;
     }
 
-    return this.saveShoppingCart({
-      products: this.listProducts,
-      totalToPay: this.totalToPay(),
-    });
+    product.stock++;
   }
 
   removeProduct(product: Product) {
@@ -68,10 +53,8 @@ export class ShoppingCartService {
       this.listProducts.splice(index, 1);
     }
 
-    return this.saveShoppingCart({
-      products: this.listProducts,
-      totalToPay: this.totalToPay(),
-    });
+    product.stock += product.count!;
+    product.count = 0;
   }
 
   productsLength(): number {
@@ -95,37 +78,13 @@ export class ShoppingCartService {
     return push(dataRef, {
       products: this.listProducts,
       totalToPay: this.totalToPay(),
-      client: this.auth.currentUser?.uid,
+      client: this.authService.getSessionUserData().email,
+      date: new Date().getTime(),
+      id: new Date().getTime(),
     });
   }
 
   clearShoppingCart() {
     this.listProducts = [];
-    const { uid } = this.auth.currentUser!;
-    const db = getDatabase();
-    const dataRef = ref(db, `shopping/${uid}`);
-    return remove(dataRef);
-  }
-
-  private saveShoppingCart(shopping: ShoppinCart) {
-    const { uid } = this.auth.currentUser!;
-    const db = getDatabase();
-    const refToSave = ref(db, `shopping/${uid}`);
-    return set(refToSave, shopping);
-  }
-
-  public getShopping() {
-    setTimeout(() => {
-      const uid = this.auth.currentUser?.uid;
-      this.userState.next(this.auth.currentUser?.email!);
-      const db = getDatabase();
-      const starCountRef = ref(db, `shopping/${uid}`);
-      onValue(starCountRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          this.listProducts = data.products;
-        }
-      });
-    }, 500);
   }
 }

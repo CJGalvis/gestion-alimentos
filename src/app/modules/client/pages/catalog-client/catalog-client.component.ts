@@ -8,7 +8,6 @@ import { ShoppingCartService } from '../../store/shopping-cart.service';
 import { ShoppingCartComponent } from '../../components/shopping-cart/shopping-cart.component';
 import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-catalog-client',
@@ -28,41 +27,30 @@ export class CatalogClientComponent implements OnInit {
 
   ngOnInit(): void {
     this.productService.getProducts();
-    this.shoppingCart.getShopping();
     this.getProducts();
-
-    this.shoppingCart.userState;
   }
 
   getProducts() {
     this.state.stateProducts.subscribe((value) => {
-      this.dataList = [];
-      for (let key in value) {
-        const data = {
-          key,
-          ...value[key],
-          count: 1,
-        };
-        this.dataList.push(data);
-      }
+      this.dataList = value;
     });
   }
 
   logout() {
-    this.auth.logout().then(() => {
-      this.router.navigate(['client/login']);
-    });
+    this.auth.logoutClient();
+    this.router.navigate(['client/login']);
   }
 
   addToCart(item: Product) {
-    if (this.auth.getSession().currentUser) {
-      this.shoppingCart.addProduct(item).then(() => {
+    if (this.auth.getSessionUser()) {
+      if (item.stock > 0) {
+        this.shoppingCart.addProduct(item);
         Swal.fire({
           title: 'Enhorabuena',
           text: 'Producto agregado exitosamente',
           icon: 'success',
         });
-      });
+      }
     } else {
       Swal.fire({
         icon: 'info',
@@ -83,7 +71,6 @@ export class CatalogClientComponent implements OnInit {
     const dialogRef = this.dialog.open(ShoppingCartComponent);
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(result);
       if (result) {
         Swal.fire({
           title: 'Hacer pedido',
@@ -91,24 +78,33 @@ export class CatalogClientComponent implements OnInit {
           showDenyButton: false,
           showCancelButton: true,
           confirmButtonText: 'Comprar',
-        }).then((result) => {
+        }).then(async (result) => {
           if (result.isConfirmed) {
-            this.shoppingCart.saveOrder().then(() => {
-              this.shoppingCart.clearShoppingCart().then(() => {
-                Swal.fire({
-                  title: 'Enhorabuena',
-                  text: 'Tu pedido ha sido guardado exitosamente',
-                  icon: 'success',
-                });
+            try {
+              await this.shoppingCart.saveOrder();
+              this.shoppingCart.clearShoppingCart();
+              this.dataList.forEach((item) => {
+                this.productService.editProduct(item);
               });
-            });
+              Swal.fire({
+                title: 'Enhorabuena',
+                text: 'Tu pedido ha sido guardado exitosamente',
+                icon: 'success',
+              });
+            } catch (error) {
+              Swal.fire({
+                title: 'Lo sentimos',
+                text: 'Tu pedido no pudo ser guardado, por favor inténtalo nuevamente',
+                icon: 'error',
+              });
+            }
           }
         });
       }
     });
   }
 
-  get user$(): Observable<string> {
-    return this.shoppingCart.userState.asObservable();
+  get user$(): any {
+    return this.auth.getSessionUserData();
   }
 }

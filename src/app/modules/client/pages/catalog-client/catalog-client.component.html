@@ -2,9 +2,9 @@
   <span class="text-header-title">Gestion de alimentos</span>
   <span class="example-spacer"></span>
 
-  <span class="text-header">{{ user$ | async }}</span>
+  <span class="text-header">{{ user$?.email }}</span>
 
-  <button mat-icon-button *ngIf="user$ | async">
+  <button mat-icon-button *ngIf="user$">
     <mat-icon> supervised_user_circle </mat-icon>
   </button>
 
@@ -12,19 +12,14 @@
     mat-icon-button
     matTooltip="Carrito de compras"
     (click)="openShoppingCart()"
-    *ngIf="user$ | async"
+    *ngIf="user$"
   >
     <mat-icon [matBadge]="shoppingCart.productsLength()" matBadgeColor="accent">
       shopping_cart
     </mat-icon>
   </button>
 
-  <button
-    mat-icon-button
-    (click)="logout()"
-    matTooltip="Salir"
-    *ngIf="user$ | async"
-  >
+  <button mat-icon-button (click)="logout()" matTooltip="Salir" *ngIf="user$">
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </mat-toolbar>
@@ -47,10 +42,14 @@
 
             <mat-card-content>
               <p>{{ item.description }}</p>
+              <p>
+                Stock: <span class="text-bold">{{ item.stock }}</span> unidades
+              </p>
             </mat-card-content>
 
             <mat-card-actions>
               <button
+                [disabled]="item.stock == 0"
                 mat-icon-button
                 color="primary"
                 matTooltip="Agregar al carrito"

@@ -13,7 +13,7 @@ export class FormProductComponent implements OnInit {
     name: new FormControl('', [Validators.required]),
     description: new FormControl('', [Validators.required]),
     price: new FormControl('', [Validators.required]),
-    amount: new FormControl('', [Validators.required]),
+    stock: new FormControl('', [Validators.required]),
   });
 
   constructor(

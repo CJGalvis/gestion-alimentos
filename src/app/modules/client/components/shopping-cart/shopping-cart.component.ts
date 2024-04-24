@@ -5,6 +5,8 @@ import { MatTable } from '@angular/material/table';
 import Swal from 'sweetalert2';
 import { DialogRef } from '@angular/cdk/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
+import { ProductsService } from 'src/app/modules/admin/pages/products-catalog/services/products.service';
+import { StateService } from 'src/app/modules/shared/services/state/state.service';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -33,26 +35,25 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   deleteProduct(product: Product) {
-    this.shoppingCart.removeProduct(product).then(() => {
-      this.table.renderRows();
-    });
+    this.shoppingCart.removeProduct(product);
+    this.table.renderRows();
   }
 
   saveOrder() {
     this.dialog.close(true);
   }
 
-  addProduct(item: Product) {
-    this.shoppingCart.addProduct(item).then(() => {
+  async addProduct(item: Product) {
+    if (item.stock > 0) {
+      this.shoppingCart.addProduct(item);
       this.dataSource = this.shoppingCart.getProducts();
       this.table.renderRows();
-    });
+    }
   }
 
-  subtractProduct(item: Product) {
-    this.shoppingCart.subtractProduct(item).then(() => {
-      this.dataSource = this.shoppingCart.getProducts();
-      this.table.renderRows();
-    });
+  async subtractProduct(item: Product) {
+    this.shoppingCart.subtractProduct(item);
+    this.dataSource = this.shoppingCart.getProducts();
+    this.table.renderRows();
   }
 }

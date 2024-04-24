@@ -21,10 +21,13 @@ export class ProductsService {
     return this.auth.currentUser;
   }
 
-  createProduct(product: Product) {
+  async createProduct(product: Product) {
     const db = getDatabase();
     const dataRef = ref(db, `products`);
-    return push(dataRef, product);
+    const data = push(dataRef, product);
+    product.key = data.key!;
+    const refData = ref(db, `products/${data.key}`);
+    return set(refData, product);
   }
 
   editProduct(product: Product) {
@@ -38,7 +41,11 @@ export class ProductsService {
     const starCountRef = ref(db, `products`);
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
-      this.state.stateProducts.next(data);
+      const dataList = [];
+      for (let key in data) {
+        dataList.push(data[key]);
+      }
+      this.state.stateProducts.next(dataList);
     });
   }
 

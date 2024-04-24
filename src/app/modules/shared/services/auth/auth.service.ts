@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from '@angular/fire/auth';
-import { getDatabase, ref, push } from '@angular/fire/database';
+import { getDatabase, ref, push, get } from '@angular/fire/database';
 import { StateService } from 'src/app/modules/shared/services/state/state.service';
 
 @Injectable({
@@ -23,8 +23,6 @@ export class AuthService {
   }
 
   create(user: any) {
-    const { uid } = this.auth.currentUser!;
-    user['uid'] = uid;
     const db = getDatabase();
     const dataRef = ref(db, `users`);
     return push(dataRef, user);
@@ -34,7 +32,46 @@ export class AuthService {
     return signOut(this.auth);
   }
 
+  logoutClient() {
+    return localStorage.clear();
+  }
+
   getSession() {
     return this.auth;
+  }
+
+  getSessionUser() {
+    return localStorage.getItem('token');
+  }
+
+  getSessionUserData() {
+    if (localStorage.getItem('token')) {
+      return JSON.parse(atob(localStorage.getItem('token')!));
+    } else {
+      return null;
+    }
+  }
+
+  async loginUser(email: string, password: string) {
+    try {
+      let docResult = null;
+      const db = getDatabase();
+      const userRef = ref(db, 'users');
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists()) {
+        snapshot.forEach((childSnapshot) => {
+          const child = childSnapshot.val();
+          if (child['email'] === email && child['password'] == btoa(password)) {
+            docResult = child;
+            delete docResult.password;
+            return;
+          }
+        });
+      }
+      return docResult;
+    } catch (error) {
+      throw error;
+    }
   }
 }

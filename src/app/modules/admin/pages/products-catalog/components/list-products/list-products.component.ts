@@ -16,7 +16,7 @@ export class ListProductsComponent implements OnInit {
     'name',
     'description',
     'price',
-    'amount',
+    'stock',
     'actions',
   ];
   public dataSource: Array<Product> = [];
@@ -36,11 +36,7 @@ export class ListProductsComponent implements OnInit {
     this.state.stateProducts.subscribe((value) => {
       this.dataSource = [];
       for (let key in value) {
-        const data = {
-          key,
-          ...value[key],
-        };
-        this.dataSource.push(data);
+        this.dataSource.push(value[key]);
       }
     });
   }
